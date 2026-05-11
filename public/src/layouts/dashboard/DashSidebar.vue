@@ -7,12 +7,8 @@
             <div class="sidebar__avatar-overlay">
                 <span v-html="Icons.camera"></span>
             </div>
-            <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                class="sidebar__avatar-file"
-                @change="onAvatarFile"
-            />
+            <input type="file" accept="image/png,image/jpeg,image/webp" class="sidebar__avatar-file"
+                @change="onAvatarFile" />
         </label>
         <p v-if="avatarErr" class="sidebar__avatar-err">{{ avatarErr }}</p>
         <div v-if="uploadingAvatar" class="sidebar__avatar-uploading">Subiendo...</div>
@@ -60,11 +56,11 @@ import type { UserFull } from '../../authService.ts';
 import { TIERS } from './types.ts';
 
 const props = defineProps<{
-    profile:       UserFull | null;
-    skinCount:     number;
-    capeCount:     number;
-    kitCount:      number;
-    friendCount:   number;
+    profile: UserFull | null;
+    skinCount: number;
+    capeCount: number;
+    kitCount: number;
+    friendCount: number;
     presenceClass: string;
 }>();
 
@@ -75,20 +71,20 @@ const emit = defineEmits<{
 
 // Bio
 const editingBio = ref(false);
-const bioInput   = ref(props.profile?.bio ?? '');
-const savingBio  = ref(false);
+const bioInput = ref(props.profile?.bio ?? '');
+const savingBio = ref(false);
 
 // Avatar upload
 const uploadingAvatar = ref(false);
-const avatarErr       = ref('');
+const avatarErr = ref('');
 
-const tierKey   = computed(() => props.profile?.premium ?? currentUser.value?.tier ?? 'free');
+const tierKey = computed(() => props.profile?.premium ?? currentUser.value?.tier ?? 'free');
 const tierLabel = computed(() => TIERS[tierKey.value]?.label ?? tierKey.value);
-const initials  = computed(() => (props.profile?.username ?? currentUser.value?.username ?? '?').slice(0, 2).toUpperCase());
-const stats     = computed(() => [
-    { label: 'Skins',  value: props.skinCount   },
-    { label: 'Capas',  value: props.capeCount   },
-    { label: 'Kits',   value: props.kitCount    },
+const initials = computed(() => (props.profile?.username ?? currentUser.value?.username ?? '?').slice(0, 2).toUpperCase());
+const stats = computed(() => [
+    { label: 'Skins', value: props.skinCount },
+    { label: 'Capas', value: props.capeCount },
+    { label: 'Kits', value: props.kitCount },
     { label: 'Amigos', value: props.friendCount },
 ]);
 
@@ -117,10 +113,10 @@ async function onAvatarFile(e: Event) {
     form.append('file', file);
 
     try {
-        const res  = await fetch(`${API_BASE}/me/avatar/upload`, {
-            method:  'POST',
+        const res = await fetch(`${API_BASE}/me/avatar/upload`, {
+            method: 'POST',
             headers: { Authorization: `Bearer ${token.value}` },
-            body:    form,
+            body: form,
         });
         const data = await res.json() as { success?: boolean; avatar_url?: string; error?: string };
         if (res.ok && data.avatar_url) {
@@ -143,159 +139,254 @@ async function onAvatarFile(e: Event) {
 @use '../../styles/dashboard' as *;
 
 .sidebar {
-    width:      260px;
+    width: 260px;
     flex-shrink: 0;
     @include card;
     @include flex-col;
     align-items: center;
-    gap:         1rem;
-    height:      fit-content;
-    position:    sticky;
-    top:         calc($header-h + 1rem);
+    gap: 1rem;
+    height: fit-content;
+    position: sticky;
+    top: calc($header-h + 1rem);
 
     // Avatar
     &__avatar-wrap {
         position: relative;
-        width:    90px;
-        height:   90px;
-        cursor:   pointer;
-        display:  block;
+        width: 8rem;
+        height: 8rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
+
     &__avatar-img,
     &__avatar-init {
-        width:         90px;
-        height:        90px;
+        width: 8rem;
+        height: 8rem;
         border-radius: 50%;
-        border:        3px solid rgba($accent, 0.5);
-        display:       flex;
-        align-items:   center;
+        display: flex;
+        align-items: center;
         justify-content: center;
     }
-    &__avatar-img   { object-fit: cover; }
-    &__avatar-init  {
+
+    &__avatar-img {
+        object-fit: cover;
+    }
+
+    &__avatar-init {
         background: linear-gradient(135deg, $accent, $accent-light);
-        font-size:  1.8rem;
+        font-size: 1.8rem;
         font-family: 'Lexend', sans-serif;
         font-weight: 700;
     }
+
     &__avatar-overlay {
-        position:       absolute;
-        inset:          50% 50%;
-        transform:      translate(-50%,-50%);
-        width:          100%;
-        height:         100%;
-        border-radius:  50%;
-        background:     rgba(0, 0, 0, 0.55);
-        display:        flex;
-        align-items:    center;
+        position: absolute;
+        inset: 50% 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.55);
+        display: flex;
+        align-items: center;
         justify-content: center;
-        opacity:        0;
-        transition:     opacity 0.2s;
-        color:          white;
+        opacity: 0;
+        transition: opacity 0.2s;
+        color: white;
     }
-    &__avatar-wrap:hover &__avatar-overlay { opacity: 1; }
-    &__avatar-file { display: none; }
-    &__avatar-err  { color: $danger; font-size: 0.75rem; margin: -0.5rem 0 0; text-align: center; }
-    &__avatar-uploading { font-size: 0.8rem; color: $text-muted; }
+
+    &__avatar-wrap:hover &__avatar-overlay {
+        opacity: 1;
+    }
+
+    &__avatar-file {
+        display: none;
+    }
+
+    &__avatar-err {
+        color: $danger;
+        font-size: 0.75rem;
+        margin: -0.5rem 0 0;
+        text-align: center;
+    }
+
+    &__avatar-uploading {
+        font-size: 0.8rem;
+        color: $text-muted;
+    }
 
     // Identity
     &__name {
         font-family: 'Lexend', sans-serif;
-        font-size:   1.15rem;
-        margin:      0;
+        font-size: 1.15rem;
+        margin: 0;
         font-weight: 600;
     }
+
     &__tier {
-        font-size:      0.72rem;
-        padding:        0.2rem 0.7rem;
-        border-radius:  20px;
-        font-weight:    700;
+        font-size: 0.72rem;
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+        font-weight: 700;
         text-transform: uppercase;
-        &.free   { background: rgba(255,255,255,.08); color: #aaa; }
-        &.basic  { background: rgba(116,185,255,.15); color: #74b9ff; }
-        &.pro    { background: rgba(253,121,168,.15); color: #fd79a8; }
-        &.legend { background: linear-gradient(90deg,#f1c40f,#f39c12); color: #000; }
+
+        &.free {
+            background: rgba(255, 255, 255, .08);
+            color: #aaa;
+        }
+
+        &.basic {
+            background: rgba(116, 185, 255, .15);
+            color: #74b9ff;
+        }
+
+        &.pro {
+            background: rgba(253, 121, 168, .15);
+            color: #fd79a8;
+        }
+
+        &.legend {
+            background: linear-gradient(90deg, #f1c40f, #f39c12);
+            color: #000;
+        }
     }
+
     &__onlinedot {
-        width:         10px;
-        height:        10px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        margin-top:    -0.5rem;
-        &.pres-online  { background: $success; box-shadow: 0 0 6px $success; animation: pulse-glow 2s infinite; }
-        &.pres-dnd     { background: $danger;  box-shadow: 0 0 6px $danger;  }
-        &.pres-offline { background: #636e72;  }
+        margin-top: -0.5rem;
+
+        &.pres-online {
+            background: $success;
+            box-shadow: 0 0 6px $success;
+            animation: pulse-glow 2s infinite;
+        }
+
+        &.pres-dnd {
+            background: $danger;
+            box-shadow: 0 0 6px $danger;
+        }
+
+        &.pres-offline {
+            background: #636e72;
+        }
     }
 
     // Stats
     &__stats {
-        display:               grid;
+        display: grid;
         grid-template-columns: 1fr 1fr;
-        gap:                   0.5rem;
-        width:                 100%;
+        gap: 0.5rem;
+        width: 100%;
     }
+
     &__stat {
-        background:     rgba(0, 0, 0, 0.2);
-        border-radius:  10px;
-        padding:        0.6rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        padding: 0.6rem;
         @include flex-col;
-        align-items:    center;
-        span  { font-size: 1.3rem; font-weight: 700; color: $accent-light; font-family: 'Lexend', sans-serif; }
-        small { font-size: 0.68rem; color: $text-muted; text-transform: uppercase; }
+        align-items: center;
+
+        span {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: $accent-light;
+            font-family: 'Lexend', sans-serif;
+        }
+
+        small {
+            font-size: 0.68rem;
+            color: $text-muted;
+            text-transform: uppercase;
+        }
     }
 
     // Bio
     &__bio {
-        width:       100%;
-        color:       #999;
-        font-size:   0.84rem;
-        cursor:      pointer;
+        width: 100%;
+        color: #999;
+        font-size: 0.84rem;
+        cursor: pointer;
         line-height: 1.5;
-        min-height:  36px;
-        border-top:  1px solid $border;
+        min-height: 36px;
+        border-top: 1px solid $border;
         padding-top: 0.8rem;
-        &:hover { color: #ccc; }
+
+        &:hover {
+            color: #ccc;
+        }
     }
-    &__bio-edit { width: 100%; @include flex-col(0.4rem); }
+
+    &__bio-edit {
+        width: 100%;
+        @include flex-col(0.4rem);
+    }
+
     &__textarea {
         @extend %input-base;
         resize: none;
     }
-    &__row { display: flex; gap: 0.5rem; }
+
+    &__row {
+        display: flex;
+        gap: 0.5rem;
+    }
+
     &__btn {
-        flex:        1;
-        padding:     0.45rem 0.8rem;
-        border:      1px solid rgba(255,255,255,.1);
+        flex: 1;
+        padding: 0.45rem 0.8rem;
+        border: 1px solid rgba(255, 255, 255, .1);
         border-radius: 8px;
-        background:  rgba(255,255,255,.06);
-        color:       #ccc;
-        cursor:      pointer;
+        background: rgba(255, 255, 255, .06);
+        color: #ccc;
+        cursor: pointer;
         font-family: 'Inter', sans-serif;
         font-weight: 600;
-        font-size:   0.82rem;
-        transition:  all 0.2s;
-        &:hover { background: rgba(255,255,255,.12); color: #fff; }
-        &:disabled { opacity: 0.5; cursor: not-allowed; }
-        &--danger { color: $danger; border-color: rgba($danger,.25); background: rgba($danger,.06); }
+        font-size: 0.82rem;
+        transition: all 0.2s;
+
+        &:hover {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &--danger {
+            color: $danger;
+            border-color: rgba($danger, .25);
+            background: rgba($danger, .06);
+        }
     }
 
     // Logout
     &__logout {
-        width:        100%;
-        margin-top:   auto;
-        background:   rgba($danger, 0.08);
-        color:        $danger;
-        border:       1px solid rgba($danger, 0.25);
+        width: 100%;
+        margin-top: auto;
+        background: rgba($danger, 0.08);
+        color: $danger;
+        border: 1px solid rgba($danger, 0.25);
         border-radius: 10px;
-        padding:      0.7rem;
-        cursor:       pointer;
-        font-family:  'Inter', sans-serif;
-        font-weight:  600;
-        display:      flex;
-        align-items:  center;
+        padding: 0.7rem;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        gap:          0.5rem;
-        transition:   all 0.2s;
-        &:hover { background: $danger; color: white; }
+        gap: 0.5rem;
+        transition: all 0.2s;
+
+        &:hover {
+            background: $danger;
+            color: white;
+        }
     }
 }
 </style>
